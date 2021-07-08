@@ -1,18 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
-WORKDIR /source
-
-# copy csproj and restore as distinct layers
-COPY *.sln .
-COPY openshift-api/*.csproj ./openshift-api/
-RUN dotnet restore
-
-# copy everything else and build app
-COPY openshift-api/. ./openshift-api/
-WORKDIR /source/openshift-api
-RUN dotnet publish -c release -o /app --no-restore
-
-# final stage/image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0
-WORKDIR /app
-COPY --from=build /app ./
-ENTRYPOINT ["dotnet", "openshift-api.dll"]
+  FROM mcr.microsoft.com/dotnet/aspnet:5.0
+  COPY bin/Release/net5.0/publish/ App/
+  WORKDIR /App
+  ENTRYPOINT ["dotnet", "openshift-api.dll"]
